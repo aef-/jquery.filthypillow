@@ -29,8 +29,6 @@
   box-shadow: 2px 2px 2px 2px rgba( 0, 0, 0, 0.4 );
   z-index: 9999;
   position: absolute;
-  bottom: 0;
-  left: 100px;
   width: 300px;
   background: #fff;
 }
@@ -78,8 +76,12 @@
   bottom: -235px;
   background: #fff;
   box-shadow: 2px 4px 2px 2px rgba( 0, 0, 0, 0.4 );
+  color: #000;
 }
 
+.fp-cal-container table, th, tr, td {
+  border: 0;
+}
 .fp-cal-container table {
   font-size: inherit;
   width: 100%;
