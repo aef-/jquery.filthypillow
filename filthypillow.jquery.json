@@ -1,0 +1,24 @@
+{
+  "name": "filthypillow",
+  "version": "0.0.0",
+  "title": "FilthyPillow",
+  "author": {
+    "name": "Adrian Fraiha",
+    "email": "aef@catch-colt.com",
+    "url": "http://github.com/aef-"
+  },
+  "licenses": [ {
+    "type": "Public Domain",
+    "url": "https://github.com/aef-/jquery.filthypillow/blob/master/LICENSE"
+  } ],
+  "dependencies": {
+    "jquery": ">=1.9.1",
+    "moment": ">=2.2.1"
+  },
+  "description": "A small and fancy calendar/date-time picker",
+  "keywords": [ "calendar", "datetime", "time", "datepicker", "timepicker", "datetimepicker" ],
+  "homepage": "https://github.com/aef-/jquery.filthypillow",
+  "docs": "http://aef-.github.io/jquery.filthypillow",
+  "demo": "http://aef-.github.io/jquery.filthypillow"
+}
+
