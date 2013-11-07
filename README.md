@@ -1,4 +1,31 @@
 jquery.filthypillow
 ===================
 
-a fancy and SMALL datetimepicker
+A fancy and small calendar and date-time picker.
+
+## Requirements
+
+Tested with:
+moment 2.2.1
+jquery 1.9.1
+
+## Examples
+
+Tested with:
+moment 2.2.1
+jquery 1.9.1
+
+## Requirements
+
+Tested with:
+moment 2.2.1
+jquery 1.9.1
+
+## Authors
+
+  - Adrian Fraiha ([aef-](http://github.com/aef-))
+
+## Pre-Release
+
+### Alpha
+  - Working version (see demos), official version won't be released until tests are written.
