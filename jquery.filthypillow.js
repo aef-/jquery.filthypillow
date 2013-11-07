@@ -434,7 +434,7 @@
     show: function( ) {
       if( !this.isActive ) {
         this.setInitialDateTime( );
-        this.$container.appendTo( this.$element );
+        this.$container.insertAfter( this.$element );
         this.activateSelectorTool( this.options.startStep );
         this.addEvents( );
         this.isActive = true;
