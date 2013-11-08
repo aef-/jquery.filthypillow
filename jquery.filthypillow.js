@@ -4,6 +4,7 @@
  */
 ( function( $, window, document, undefined ) {
   var pluginName = "filthypillow",
+      name = "plugin_" + pluginName,
       defaults = { 
         startStep: "day",
         minDateTime: function( ) {
@@ -16,7 +17,7 @@
       methods = [ "show", "hide", "destroy", "updateDateTime", "changeDateTimeUnit", "setTimeZone" ];
 
   function FilthyPillow( $element, options ) {
-    this.options = $.extend( defaults, options );
+    this.options = $.extend( {}, defaults, options );
 
     this.$element = $element;
     this.setup( );
@@ -224,15 +225,16 @@
     },
 
     onKeyUp: function( e ) {
+      var keyCode = e.keyCode || e.which;
       if( this.currentStep === "meridiem" )
         return;
 
-      if( e.keyCode === 8 ) //backspace
+      if( keyCode === 8 ) //backspace
         this.currentDigit -= 1;
 
-      if( e.keyCode >= 48 && e.keyCode <= 57 ) {//between 0-9
+      if( keyCode >= 48 && keyCode <= 57 ) {//between 0-9
         this.currentDigit += 1;
-        this.updateDigit( this.currentStep, this.currentDigit, e.keyCode - 48 );
+        this.updateDigit( this.currentStep, this.currentDigit, keyCode - 48 );
       }
 
       if( this.currentDigit === 2 )
@@ -240,18 +242,19 @@
     },
 
     onKeyDown: function( e ) {
-      switch( e.keyCode ) {
+      var keyCode = e.keyCode || e.which;
+      switch( keyCode ) {
         case 38: this.moveUp( ); break; //up
         case 40: this.moveDown( ); break; //down
         case 37: this.moveLeft( ); break; //left
         case 39: this.moveRight( ); break; //right
       }
-      if( e.shiftKey && e.keyCode === 9 ) //shift + tab
+      if( e.shiftKey && keyCode === 9 ) //shift + tab
         this.moveLeft( );
-      else if( e.keyCode === 9 ) //tab
+      else if( keyCode === 9 ) //tab
         this.moveRight( );
 
-      if( e.keyCode === 13 ) { //enter - lets them save on enter
+      if( keyCode === 13 ) { //enter - lets them save on enter
         this.$saveButton.focus( );
         return true;
       }
@@ -449,9 +452,9 @@
     },
     destroy: function( ) {
       this.removeEvents( );
-      this.removeEventsOnce( );
       this.$container.remove( );
       this.isActive = false;
+      this.$element.removeData( name );
     }
   };
 
@@ -660,21 +663,19 @@
   };
 
   $.fn[ pluginName ] = function( optionsOrMethod ) {
-    var $eachThis,
+    var $this,
         _arguments = Array.prototype.slice.call( arguments ),
-        name = "plugin_" + pluginName;
+        optionsOrMethod = optionsOrMethod || { };
     //Initialize a new version of the plugin
     return this.each(function ( ) {
-      $eachThis = $( this );
-      if( !$eachThis.data( name ) ) {
-        $eachThis.data( name, new FilthyPillow( $eachThis, optionsOrMethod ) );
-      }
-      else {
-        if( ~$.inArray( optionsOrMethod, methods ) ) {
-          $eachThis.data( name )[ optionsOrMethod ].apply( $eachThis.data( name ), _arguments.slice( 1, _arguments.length ) );
-        }
+      $this = $( this );
+      if( !$this.data( name ) && ( typeof optionsOrMethod ).toLowerCase( ) === "object" ) 
+        $this.data( name, new FilthyPillow( $this, optionsOrMethod ) );
+      else if( ( typeof optionsOrMethod ).toLowerCase( ) === "string" ) {
+        if( ~$.inArray( optionsOrMethod, methods ) )
+          $this.data( name )[ optionsOrMethod ].apply( $this.data( name ), _arguments.slice( 1, _arguments.length ) );
         else
-          console.error( "Method", optionsOrMethod, "does not exist. Did you instantiate filthypillow?" );
+          throw new Error( "Method " + optionsOrMethod + " does not exist. Did you instantiate filthypillow?" );
       }
     } );
   };
