@@ -7,14 +7,12 @@
       name = "plugin_" + pluginName,
       defaults = { 
         startStep: "day",
-        minDateTime: function( ) {
-          return moment( );
-        },
-        maxDateTime: function( ) {
-          return moment( ).add( "days", 7 );
-        },
-      },
-      methods = [ "show", "hide", "destroy", "updateDateTime", "changeDateTimeUnit", "setTimeZone" ];
+        minDateTime: null,
+        maxDateTime: null, //function returns moment obj
+        initialDateTime: null //function returns moment obj
+      }, 
+      methods = [ "show", "hide", "destroy", "updateDateTime", "updateDateTimeUnit", "setTimeZone" ],
+      returnableMethods = [ "getDate" ];
 
   function FilthyPillow( $element, options ) {
     this.options = $.extend( {}, defaults, options );
@@ -255,7 +253,7 @@
         this.moveRight( );
 
       if( keyCode === 13 ) { //enter - lets them save on enter
-        this.$saveButton.focus( );
+        this.$saveButton.click( );
         return true;
       }
 
@@ -362,31 +360,27 @@
       //Initial value are done in increments of 15 from now. 
       //If the time between now and 15 minutes from now is less than 5 minutes, 
       //go onto the next 15.
-      if( minutes <= 10  )
-        m.set( "minute", 15 );
-      else if( minutes <= 25 )
-        m.set( "minute", 30 );
-      else if( minutes <= 40 )
-        m.set( "minute", 45 );
-      else if( minutes <= 55 ) {
-        m.set( "minute", 0 );
-        m.add( 1, "hours" );
-      }
-      else if( minutes > 55 ) {
-        m.set( "minute", 15 );
-        m.add( 1, "hours" );
-      }
+      if( typeof this.options.initialDateTime === "function" )
+        m = this.options.initialDateTime( m.clone( ) );
 
       this.updateDateTime( m );
     },
 
     isInRange: function( date ) {
-      var minDateTime = this.options.minDateTime( ),
-          maxDateTime = this.options.maxDateTime( );
-      minDateTime.zone( this.currentTimeZone );
-      maxDateTime.zone( this.currentTimeZone );
-      return !( date.diff( minDateTime, "seconds" ) < 0 
-             || date.diff( maxDateTime, "seconds" ) > 0 )
+      var minDateTime = typeof this.options.minDateTime === "function" && this.options.minDateTime( ),
+          maxDateTime = typeof this.options.minDateTime === "function" && this.options.maxDateTime( ),
+          left = right = false;
+      
+      if( minDateTime ) {
+        minDateTime.zone( this.currentTimeZone );
+        left = date.diff( minDateTime, "seconds" ) < 0;
+      }
+      if( maxDateTime ) {
+        maxDateTime.zone( this.currentTimeZone );
+        right = date.diff( minDateTime, "seconds" ) > 0;
+      }
+
+      return !( right || left )
     },
 
     setTimeZone: function( zone ) {
@@ -400,6 +394,20 @@
         this.calendar.render( );
     },
 
+    changeDateTimeUnit: function( unit, value ) {
+      var tmpDateTime = this.dateTime.clone( ).add( value, unit + "s" ),
+          isInRange = this.isInRange( tmpDateTime );
+
+      if( !this.isError && !isInRange )
+        return;
+      else if( isInRange )
+        this.hideError( );
+
+      this.dateTime.add( value, unit + "s" );
+      this.renderDateTime( );
+
+      this.dateChange( );
+    }, 
     //api
     updateDateTimeUnit: function( unit, value, moveNext ) {
       this.dateTime.set( unit, value );
@@ -415,19 +423,8 @@
 
       this.dateChange( );
     },
-    changeDateTimeUnit: function( unit, value ) {
-      var tmpDateTime = this.dateTime.clone( ).add( value, unit + "s" ),
-          isInRange = this.isInRange( tmpDateTime );
-
-      if( !this.isError && !isInRange )
-        return;
-      else if( isInRange )
-        this.hideError( );
-
-      this.dateTime.add( value, unit + "s" );
-      this.renderDateTime( );
-
-      this.dateChange( );
+    getDate: function( ) {
+      return this.dateTime.clone( );
     },
     updateDateTime: function( dateObj ) {
       this.setDateTime( dateObj );
@@ -511,17 +508,20 @@
   };
 
   Calendar.prototype.toggleMonthArrows = function( ) {
-    var minDiff = this.date.clone( ).subtract( 'months', 1 ).endOf( "month" )
+
+    var minDiff = typeof this.options.minDateTime === "function" && 
+                    this.date.clone( ).subtract( 'months', 1 ).endOf( "month" )
                            .diff( this.options.minDateTime( ), "seconds" ),
-        maxDiff = this.date.clone( ).add( 'months', 1 ).date( 1 )
+        maxDiff = typeof this.options.maxDateTime === "function" &&
+          this.date.clone( ).add( 'months', 1 ).date( 1 )
                            .diff( this.options.maxDateTime( ), "seconds" );
 
-    if( minDiff < 0 )
+    if( minDiff && minDiff < 0 )
       this.$left.hide( );
     else
       this.$left.show( );
 
-    if( maxDiff > 0 )
+    if( maxDiff && maxDiff > 0 )
       this.$right.hide( );
     else
       this.$right.show( );
@@ -571,6 +571,9 @@
         dateTmp,
         $this;
 
+    if( typeof self.options.maxDateTime !== "function" && typeof self.options.minDateTime !== "function" )
+      return;
+
     this.$dates.find( ".fp-cal-date" ).filter( function( ) {
       dateTmp = self.date.clone( );
       $this = $( this );
@@ -579,7 +582,8 @@
         dateTmp.add( "months", $this.attr( "data-add-month" ) );
 
       dateTmp.date( $( this ).attr( "data-date" ) );
-      return !!( dateTmp.diff( self.options.minDateTime( ), "seconds" ) < 0 || dateTmp.diff( self.options.maxDateTime( ), "seconds" ) > 0 );
+      return !!( ( typeof self.options.minDateTime === "function" && dateTmp.diff( self.options.minDateTime( ), "seconds" ) < 0 ) || //left
+        ( typeof self.options.maxDateTime === "function" && dateTmp.diff( self.options.maxDateTime( ), "seconds" ) > 0 ) ); //right
     } ).addClass( "fp-disabled" ); 
   };
 
@@ -667,16 +671,20 @@
         _arguments = Array.prototype.slice.call( arguments ),
         optionsOrMethod = optionsOrMethod || { };
     //Initialize a new version of the plugin
-    return this.each(function ( ) {
-      $this = $( this );
-      if( !$this.data( name ) && ( typeof optionsOrMethod ).toLowerCase( ) === "object" ) 
-        $this.data( name, new FilthyPillow( $this, optionsOrMethod ) );
-      else if( ( typeof optionsOrMethod ).toLowerCase( ) === "string" ) {
-        if( ~$.inArray( optionsOrMethod, methods ) )
-          $this.data( name )[ optionsOrMethod ].apply( $this.data( name ), _arguments.slice( 1, _arguments.length ) );
-        else
-          throw new Error( "Method " + optionsOrMethod + " does not exist. Did you instantiate filthypillow?" );
-      }
-    } );
+    if( ( typeof optionsOrMethod ).toLowerCase( ) === "string" && ~$.inArray( optionsOrMethod, returnableMethods ) )
+      return this.data( name )[ optionsOrMethod ].apply( this.data( name ), _arguments.slice( 1, _arguments.length ) );
+    else {
+      return this.each(function ( ) {
+        $this = $( this );
+        if( !$this.data( name ) && ( typeof optionsOrMethod ).toLowerCase( ) === "object" ) 
+          $this.data( name, new FilthyPillow( $this, optionsOrMethod ) );
+        else if( ( typeof optionsOrMethod ).toLowerCase( ) === "string" ) {
+          if( ~$.inArray( optionsOrMethod, methods ) )
+            $this.data( name )[ optionsOrMethod ].apply( $this.data( name ), _arguments.slice( 1, _arguments.length ) );
+          else
+            throw new Error( "Method " + optionsOrMethod + " does not exist. Did you instantiate filthypillow?" );
+        }
+      } );
+    }
   };
 } )( jQuery, window, document );
