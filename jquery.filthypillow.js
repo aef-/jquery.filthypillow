@@ -1,4 +1,4 @@
-/* jquery.mudgut v.0.0.0 (prerelease)
+/* jquery.mudgut v.0.0.1
  * simple and fancy datetimepicker
  * by aef
  */
