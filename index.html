@@ -1,58 +1,35 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/jquery.filthypillow.css" media="screen" />
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <script src="javascripts/libs/jquery.js"></script>
-    <script src="javascripts/libs/moment.js"></script>
-    <script src="javascripts/jquery.filthypillow.js"></script>
-    <style>
-      .filthypillow-1 {
-        position: relative;
-        padding: 5px;
-        border: 1px solid #c0c0c0;
-        font-size: 1.1em;
-        width: 300px;
-      }
-    </style>
-    <title>jquery.filthypillow by aef-</title>
-  </head>
+---
+layout: index
+---
+<header>
+<h1>jquery.filthypillow</h1>
+<h2>a fancy and small calendar and date-time picker</h2>
+</header>
 
-  <body>
-    <div id="container">
-      <div class="inner">
+<section id="downloads" class="clearfix">
+<a href="https://github.com/aef-/jquery.filthypillow/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+<a href="https://github.com/aef-/jquery.filthypillow/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+<a href="https://github.com/aef-/jquery.filthypillow" id="view-on-github" class="button"><span>View on GitHub</span></a>
+</section>
 
-        <header>
-          <h1>jquery.filthypillow</h1>
-          <h2>a fancy and small calendar and date-time picker</h2>
-        </header>
+<hr>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/aef-/jquery.filthypillow/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/aef-/jquery.filthypillow/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/aef-/jquery.filthypillow" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
+<section id="main_content">
+<h2><a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+<p>Tested with:
+<br/><a href="http://momentjs.com">moment 2.2.1</a>
+<br/><a href="http://jquery.com">jquery 1.9.1</a>
+</p>
 
-        <hr>
+<h2><a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
-        <section id="main_content">
-          <h2><a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
-          <p>Tested with:
-            <br/><a href="http://momentjs.com">moment 2.2.1</a>
-            <br/><a href="http://jquery.com">jquery 1.9.1</a>
-            </p>
-
-          <h2><a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
-          <div class="highlight"><pre><code class="js">var $fp = $( ".filthypillow-1" );
-$fp.filthypillow( );
+{% highlight javascript %}
+var $fp = $( ".filthypillow-1" );
+$fp.filthypillow( { 
+  minDateTime: function( ) {
+    return moment( ); //now
+  } 
+} );
 $fp.on( "focus", function( ) {
   $fp.filthypillow( "show" );
 } );
@@ -60,66 +37,89 @@ $fp.on( "fp:save", function( e, dateObj ) {
   $fp.val( dateObj.format( "MMM DD YYYY hh:mm A" ) );
   $fp.filthypillow( "hide" );
 } );                                                     
-</code></pre></div> 
-          <p><div class="input-group"><input class="filthypillow-1" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div></p>
+{% endhighlight %}
+<p><div class="input-group"><input class="filthypillow-1" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div></p>
 <script>
 var $fp = $( ".filthypillow-1" );
-console.info( "test" );
-$fp.filthypillow( );
-$fp.on( "focus", function( ) {
-  $fp.filthypillow( "show" );
+
+$fp.filthypillow( {
+minDateTime: function( ) {
+return moment( ); //now
+}   
 } );
+$fp.on( "focus", function( ) {
+    $fp.filthypillow( "show" );
+    } );
 $fp.on( "fp:save", function( e, dateObj ) {
-  $fp.val( dateObj.format( "MMM DD YYYY hh:mm A" ) );
-  $fp.filthypillow( "hide" );
-} );                                                    
+    $fp.val( dateObj.format( "MMM DD YYYY hh:mm A" ) );
+    $fp.filthypillow( "hide" );
+    } );                                                    
 </script>
 <h2><a name="hotkeys" class="anchor" href="#hotkeys"><span class="octicon octicon-link"></span></a>Hotkeys</h2>
 <h3>enter (save)</h3>
 <h3>left-right arrows/tab (switch steps)</h3>
 <h3>up-down arrows (change digits)</h3>
 <h3>number keys (change digits)</h3>
-          <h2><a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
-          <h3>startStep</h3>
-          <p>Step that should be active on initialization.</p>
-          <pre>month, day, hour, minute, meridiem</pre>
-          <h4>Default</h4>
-          <p>day</p>
-          <h3>minDateTime</h3>
-          <p>A function that returns a date object of the earliest time that can be selected.</p>
-          <h4>Default</h4>
-          <div class="highlight"><pre><code class="js">minDateTime: function( ) {
+<h2><a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+<h3>startStep</h3>
+<p>Step that should be active on initialization.</p>
+<pre>month, day, hour, minute, meridiem</pre>
+<h4>Default</h4>
+<p>day</p>
+<h3>initialDateTime</h3>
+<p>Set the initial date time to be shown.</p>
+<h4>Default</h4>
+<p>null</p>
+<h4>Example</h4>
+{% highlight javascript %}
+initialDateTime: function( m ) {
+  return m.add( "day", 7 );
+}
+{% endhighlight %}
+<h3>minDateTime</h3>
+<p>Set the earliest time that can be selected.</p>
+<h4>Default</h4>
+<p>null</p>
+<h4>Example</h4>
+{% highlight javascript %}
+minDateTime: function( ) {
   return moment( ); //now
-}</code></pre></div>
-          <h3>minDateTime</h3>
-          <p>A function that returns a date object of the latest time that can be selected.</p>
-          <h4>Default</h4>
-          <div class="highlight"><pre><code class="js">maxDateTime: function( ) {
+}
+{% endhighlight %}
+<h3>maxDateTime</h3>
+<p>Set the latest time that can be selected.</p>
+<h4>Default</h4>
+<p>null</p>
+<h4>Example</h4>
+{% highlight javascript %}
+maxDateTime: function( ) {
   return moment( ).add( "days", 7 ); //7 days from now
-}</code></pre></div> 
-
-          <h2><a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
-          <h3>fp:save</h3>
-          <p>Passes selected date object.</p>
-          <div class="highlight"><pre><code class="js">$( ".datetime" ).filthypillow( );
+}
+{% endhighlight %}
+<h2><a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
+<h3>fp:save</h3>
+<p>Passes selected date object.</p>
+{% highlight javascript %}
+$( ".datetime" ).filthypillow( );
 $( ".datetime" ).on( "fp:save", function( e, dateObj ) {
   console.info( dateObj );
-} );</code></pre></div>
+} );
+{% endhighlight %}
 
-          <h2><a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
-          <h3>show( )</h3>
-          <h3>hide( )</h3> 
-          <h3>destroy( )</h3>
-          <h3>updateDateTime( dateObj )</h3>
-          <h3>changeDateTimeUnit( unit, value )</h3>
-          <h3>setTimeZone( zone )</h3>
-        </section>
+<h2><a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
+<h3>show( )</h3>
+<h3>hide( )</h3> 
+<h3>destroy( )</h3>
+<h3>updateDateTime( dateObj )</h3>
+<h3>changeDateTimeUnit( unit, value )</h3>
+<h3>setTimeZone( zone )</h3>
+<h3>getDate( ): DateObj</h3>
 
-        <footer>
-          jquery.filthypillow is maintained by <a href="https://github.com/aef-">aef-</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
-    </div>
-  </div>
-</body>
-</html>
+                <h2><a name="tests" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>Tests</h2>
+                <p>Run tests <a href="/tests">here</a>.</p>
+                </section>
+
+                <footer>
+                jquery.filthypillow is maintained by <a href="https://github.com/aef-">aef-</a><br>
+                This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+                </footer>

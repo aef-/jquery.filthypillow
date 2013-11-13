@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/jquery.filthypillow.css" media="screen" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="javascripts/libs/jquery.js"></script>
+    <script src="javascripts/libs/moment.js"></script>
+    <script src="javascripts/jquery.filthypillow.js"></script>
+    <style>
+      .filthypillow-1 {
+        position: relative;
+        padding: 5px;
+        border: 1px solid #c0c0c0;
+        font-size: 1.1em;
+        width: 300px;
+      }
+    </style>
+    <title>jquery.filthypillow by aef-</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+      <header>
+<h1>jquery.filthypillow</h1>
+<h2>a fancy and small calendar and date-time picker</h2>
+</header>
+
+<section id="downloads" class="clearfix">
+<a href="https://github.com/aef-/jquery.filthypillow/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+<a href="https://github.com/aef-/jquery.filthypillow/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+<a href="https://github.com/aef-/jquery.filthypillow" id="view-on-github" class="button"><span>View on GitHub</span></a>
+</section>
+
+<hr>
+
+<section id="main_content">
+<h2><a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+<p>Tested with:
+<br/><a href="http://momentjs.com">moment 2.2.1</a>
+<br/><a href="http://jquery.com">jquery 1.9.1</a>
+</p>
+
+<h2><a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">$fp</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span> <span class="s2">&quot;.filthypillow-1&quot;</span> <span class="p">);</span>
+<span class="nx">$fp</span><span class="p">.</span><span class="nx">filthypillow</span><span class="p">(</span> <span class="p">{</span> 
+  <span class="nx">minDateTime</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">moment</span><span class="p">(</span> <span class="p">);</span> <span class="c1">//now</span>
+  <span class="p">}</span> 
+<span class="p">}</span> <span class="p">);</span>
+<span class="nx">$fp</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span> <span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="nx">$fp</span><span class="p">.</span><span class="nx">filthypillow</span><span class="p">(</span> <span class="s2">&quot;show&quot;</span> <span class="p">);</span>
+<span class="p">}</span> <span class="p">);</span>
+<span class="nx">$fp</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span> <span class="s2">&quot;fp:save&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">dateObj</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="nx">$fp</span><span class="p">.</span><span class="nx">val</span><span class="p">(</span> <span class="nx">dateObj</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span> <span class="s2">&quot;MMM DD YYYY hh:mm A&quot;</span> <span class="p">)</span> <span class="p">);</span>
+  <span class="nx">$fp</span><span class="p">.</span><span class="nx">filthypillow</span><span class="p">(</span> <span class="s2">&quot;hide&quot;</span> <span class="p">);</span>
+<span class="p">}</span> <span class="p">);</span>                                                     
+</code></pre></div>
+<p><div class="input-group"><input class="filthypillow-1" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div></p>
+<script>
+var $fp = $( ".filthypillow-1" );
+
+$fp.filthypillow( {
+minDateTime: function( ) {
+return moment( ); //now
+}   
+} );
+$fp.on( "focus", function( ) {
+    $fp.filthypillow( "show" );
+    } );
+$fp.on( "fp:save", function( e, dateObj ) {
+    $fp.val( dateObj.format( "MMM DD YYYY hh:mm A" ) );
+    $fp.filthypillow( "hide" );
+    } );                                                    
+</script>
+<h2><a name="hotkeys" class="anchor" href="#hotkeys"><span class="octicon octicon-link"></span></a>Hotkeys</h2>
+<h3>enter (save)</h3>
+<h3>left-right arrows/tab (switch steps)</h3>
+<h3>up-down arrows (change digits)</h3>
+<h3>number keys (change digits)</h3>
+<h2><a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+<h3>startStep</h3>
+<p>Step that should be active on initialization.</p>
+<pre>month, day, hour, minute, meridiem</pre>
+<h4>Default</h4>
+<p>day</p>
+<h3>initialDateTime</h3>
+<p>Set the initial date time to be shown.</p>
+<h4>Default</h4>
+<p>null</p>
+<h4>Example</h4>
+<div class="highlight"><pre><code class="javascript"><span class="nx">initialDateTime</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">m</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">m</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="mi">7</span> <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3>minDateTime</h3>
+<p>Set the earliest time that can be selected.</p>
+<h4>Default</h4>
+<p>null</p>
+<h4>Example</h4>
+<div class="highlight"><pre><code class="javascript"><span class="nx">minDateTime</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">moment</span><span class="p">(</span> <span class="p">);</span> <span class="c1">//now</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3>maxDateTime</h3>
+<p>Set the latest time that can be selected.</p>
+<h4>Default</h4>
+<p>null</p>
+<h4>Example</h4>
+<div class="highlight"><pre><code class="javascript"><span class="nx">maxDateTime</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">moment</span><span class="p">(</span> <span class="p">).</span><span class="nx">add</span><span class="p">(</span> <span class="s2">&quot;days&quot;</span><span class="p">,</span> <span class="mi">7</span> <span class="p">);</span> <span class="c1">//7 days from now</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2><a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
+<h3>fp:save</h3>
+<p>Passes selected date object.</p>
+<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(</span> <span class="s2">&quot;.datetime&quot;</span> <span class="p">).</span><span class="nx">filthypillow</span><span class="p">(</span> <span class="p">);</span>
+<span class="nx">$</span><span class="p">(</span> <span class="s2">&quot;.datetime&quot;</span> <span class="p">).</span><span class="nx">on</span><span class="p">(</span> <span class="s2">&quot;fp:save&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">e</span><span class="p">,</span> <span class="nx">dateObj</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span> <span class="nx">dateObj</span> <span class="p">);</span>
+<span class="p">}</span> <span class="p">);</span>
+</code></pre></div>
+
+<h2><a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
+<h3>show( )</h3>
+<h3>hide( )</h3> 
+<h3>destroy( )</h3>
+<h3>updateDateTime( dateObj )</h3>
+<h3>changeDateTimeUnit( unit, value )</h3>
+<h3>setTimeZone( zone )</h3>
+<h3>getDate( ): DateObj</h3>
+
+                <h2><a name="tests" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>Tests</h2>
+                <p>Run tests <a href="/tests">here</a>.</p>
+                </section>
+
+                <footer>
+                jquery.filthypillow is maintained by <a href="https://github.com/aef-">aef-</a><br>
+                This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+                </footer>
+
+    </div>
+  </div>
+</body>
+</html>
