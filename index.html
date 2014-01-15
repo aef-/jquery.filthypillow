@@ -13,7 +13,16 @@
   <body>
     <div class="filthypillow"></div>
     <script type="text/javascript">
-      $( ".filthypillow" ).filthypillow( { } );
+      var now = moment( ).subtract( "seconds", 1 ),
+          later = moment( ).add( "days", 7 );
+      $( ".filthypillow" ).filthypillow( {
+        minDateTime: function( ) {
+          return now;
+        },
+        maxDateTime: function( ) {
+          return later;
+        }
+      } );
       $( ".filthypillow" ).filthypillow( "show" );
     </script> 
   </body>
