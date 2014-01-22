@@ -1,4 +1,4 @@
-/* jquery.filthypillow v.1.1.0
+/* jquery.filthypillow v.1.1.1
  * simple and fancy datetimepicker
  * by aef
  */
