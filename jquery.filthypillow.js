@@ -9,7 +9,9 @@
         startStep: "day",
         minDateTime: null,
         maxDateTime: null, //function returns moment obj
-        initialDateTime: null //function returns moment obj
+        initialDateTime: null, //function returns moment obj
+        enableCalendar: true,
+        steps: [ "month", "day", "hour", "minute", "meridiem" ]
       },
       methods = [ "show", "hide", "destroy", "updateDateTime", "updateDateTimeUnit", "setTimeZone" ],
       returnableMethods = [ "getDate" ];
@@ -40,12 +42,12 @@
     currentTimeZone: null, //null is browser default
     currentDigit: 0, //first or second digit for key press
     isActiveLeadingZero: 0, //user types in 0 as first digit
-    steps: [ "month", "day", "hour", "minute", "meridiem" ],
     stepRegExp: null,
     isError: false, //error is being shown
     isActive: false, //whether the calendar is active or not
 
     setup: function( ) {
+      this.steps = this.options.steps;
       this.stepRegExp = new RegExp( this.steps.join( "|" ) )
       this.$window = $( window );
       this.$document = $( document );
@@ -71,17 +73,19 @@
       this.$descriptionBox = this.$container.find( ".fp-description" );
 
 
-      this.calendar = new Calendar( this.$container.find( ".fp-calendar-calendar" ),
-      {
-        minDateTime: this.options.minDateTime,
-        maxDateTime: this.options.maxDateTime,
-        onSelectDate: $.proxy( function( year, month, date ) {
-          this.updateDateTimeUnit( "month", month, false );
-          this.updateDateTimeUnit( "date", date, false );
-          this.updateDateTimeUnit( "year", year, false );
-        }, this )
-      } );
+      if( this.options.enableCalendar )
+        this.calendar = new Calendar( this.$container.find( ".fp-calendar-calendar" ),
+        {
+          minDateTime: this.options.minDateTime,
+          maxDateTime: this.options.maxDateTime,
+          onSelectDate: $.proxy( function( year, month, date ) {
+            this.updateDateTimeUnit( "month", month, false );
+            this.updateDateTimeUnit( "date", date, false );
+            this.updateDateTimeUnit( "year", year, false );
+          }, this )
+        } );
 
+      this.setInitialDateTime( );
     },
     showError: function( step, errorMessage ) {
       this[ "$" + step ].addClass( "fp-error fp-out-of-range" );
@@ -106,10 +110,12 @@
       //Reset digit
       this.currentDigit = 0;
       this.isActiveLeadingZero = 0;
-      if( step === "day" || step === "month" )
-        this.calendar.show( );
-      else
-        this.calendar.hide( );
+      if( this.options.enableCalendar ) {
+        if( step === "day" || step === "month" )
+          this.calendar.show( );
+        else
+          this.calendar.hide( );
+      }
     },
 
     to12Hour: function( value ) {
@@ -218,7 +224,7 @@
           classes = $target.attr( "class" ),
       //figure out which step was clicked
           step = classes.match( this.stepRegExp );
-      if( step.length )
+      if( step && step.length )
         this.activateSelectorTool( step[ 0 ] );
     },
 
@@ -343,7 +349,9 @@
     },
     setDateTime: function( dateObj, moveNext ) {
       this.dateTime = moment( dateObj );
-      this.calendar.setDate( this.dateTime );
+
+      if( this.options.enableCalendar )
+        this.calendar.setDate( this.dateTime );
 
       if( !this.isInRange( this.dateTime ) )
         this.showError( this.currentStep, "Date is out of range, please fix." );
@@ -396,13 +404,17 @@
     setTimeZone: function( zone ) {
       this.dateTime.zone( zone );
       this.currentTimeZone = zone;
+
+      if( this.options.enableCalendar )
       this.calendar.setTimeZone( zone );
     },
 
     dateChange: function( ) {
-      this.calendar.setDate( this.dateTime );
-      if( this.currentStep === "day" || this.currentStep === "month" )
-        this.calendar.render( );
+      if( this.options.enableCalendar ) {
+        this.calendar.setDate( this.dateTime );
+        if( this.currentStep === "day" || this.currentStep === "month" )
+          this.calendar.render( );
+      }
     },
 
     changeDateTimeUnit: function( unit, value ) {

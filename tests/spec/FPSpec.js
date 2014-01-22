@@ -30,7 +30,9 @@ describe("FilthyPillow", function() {
       '<input class="filthypillow-4"/>' +
       '<input class="filthypillow-5"/>' +
       '<input class="filthypillow-6"/>' +
-      '<input class="filthypillow-7"/>'
+      '<input class="filthypillow-7"/>' +
+      '<input class="filthypillow-8"/>' +
+      '<input class="filthypillow-9"/>'
     );
 
 
@@ -82,7 +84,13 @@ describe("FilthyPillow", function() {
     } );
 
     $fp8 = $( ".filthypillow-8" );
+    $fp8.filthypillow( {
+      enableCalendar: false
+    } );
     $fp9 = $( ".filthypillow-9" );
+    $fp9.filthypillow( {
+      steps: [ "month", "day" ]
+    } );
   } );
 
   afterEach(function() {
@@ -93,6 +101,9 @@ describe("FilthyPillow", function() {
     $fp5.filthypillow( "destroy" );
 
     $fp7.filthypillow( "destroy" );
+
+    $fp8.filthypillow( "destroy" );
+    $fp9.filthypillow( "destroy" );
   } );
 
   describe( "Behavior", function( ) {
@@ -287,6 +298,21 @@ describe("FilthyPillow", function() {
       $fp1.filthypillow( "show" );
       expect($fp1.filthypillow( "getDate" ) ).toHaveDate( now.hour( 1 ), "hour" );
     });
+    it("should not show calendar popup when disabled", function() {
+      $fp8.filthypillow( "show" );
+      expect($fp8).not.toShowCalendar( );
+    });
+    it("should disable excluded steps from being activated", function() {
+      $fp9.filthypillow( "show" );
+      expect($fp9).toHaveActiveStep( "day" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      expect($fp9).toHaveActiveStep( "month" );
+      triggerKey( "keydown", keys.LEFT_ARROW );
+      expect($fp9).toHaveActiveStep( "day" );
+
+      $fp9.next( ".fp-container" ).find( ".fp-minute" ).click( );
+      expect($fp9).toHaveActiveStep( "day" );
+    });
   } );
 
   describe( "API", function( ) {
@@ -329,9 +355,9 @@ describe("FilthyPillow", function() {
     it("should set dates timezone", function() {
       $fp1.filthypillow( "show" );
       $fp1.filthypillow( "setTimeZone", 160 );
-      expect( $fp1.filthypillow( "getDate" ).zone( ) ).toEqual( 300 );
+      expect( $fp1.filthypillow( "getDate" ).zone( ) ).toEqual( 160 );
       var date = $fp1.filthypillow( "getDate" ).subtract( "hour", 1 );
-      $fp1.filthypillow( "setTimeZone", 360 );
+      $fp1.filthypillow( "setTimeZone", 220 );
       expect( $fp1.filthypillow( "getDate" ) ).toHaveDate( date, "hour" );
     } );
   } );
