@@ -1,16 +1,18 @@
-/* jquery.mudgut v.0.0.0 (prerelease)
+/* jquery.filthypillow v.1.1.0
  * simple and fancy datetimepicker
  * by aef
  */
 ( function( $, window, document, undefined ) {
   var pluginName = "filthypillow",
       name = "plugin_" + pluginName,
-      defaults = { 
+      defaults = {
         startStep: "day",
         minDateTime: null,
         maxDateTime: null, //function returns moment obj
-        initialDateTime: null //function returns moment obj
-      }, 
+        initialDateTime: null, //function returns moment obj
+        enableCalendar: true,
+        steps: [ "month", "day", "hour", "minute", "meridiem" ]
+      },
       methods = [ "show", "hide", "destroy", "updateDateTime", "updateDateTimeUnit", "setTimeZone" ],
       returnableMethods = [ "getDate" ];
 
@@ -35,23 +37,23 @@
                 '<div class="fp-errors"></div>' +
                 '<div class="fp-calendar-calendar"></div>' +
               '</div>',
-    currentStep: null, 
+    currentStep: null,
     dateTime: null,
     currentTimeZone: null, //null is browser default
     currentDigit: 0, //first or second digit for key press
     isActiveLeadingZero: 0, //user types in 0 as first digit
-    steps: [ "month", "day", "hour", "minute", "meridiem" ], 
     stepRegExp: null,
     isError: false, //error is being shown
     isActive: false, //whether the calendar is active or not
 
     setup: function( ) {
+      this.steps = this.options.steps;
       this.stepRegExp = new RegExp( this.steps.join( "|" ) )
       this.$window = $( window );
       this.$document = $( document );
       this.$body = $( "body" );
       this.id = "filthypillow-" + Math.round( Math.random( ) * 1000 );
- 
+
       this.$container = $( this.template );
       this.$container.attr( "id", this.id );
 
@@ -71,17 +73,19 @@
       this.$descriptionBox = this.$container.find( ".fp-description" );
 
 
-      this.calendar = new Calendar( this.$container.find( ".fp-calendar-calendar" ), 
-      {
-        minDateTime: this.options.minDateTime,
-        maxDateTime: this.options.maxDateTime,
-        onSelectDate: $.proxy( function( year, month, date ) {
-          this.updateDateTimeUnit( "month", month, false );
-          this.updateDateTimeUnit( "date", date, false );
-          this.updateDateTimeUnit( "year", year, false );
-        }, this )
-      } );
+      if( this.options.enableCalendar )
+        this.calendar = new Calendar( this.$container.find( ".fp-calendar-calendar" ),
+        {
+          minDateTime: this.options.minDateTime,
+          maxDateTime: this.options.maxDateTime,
+          onSelectDate: $.proxy( function( year, month, date ) {
+            this.updateDateTimeUnit( "month", month, false );
+            this.updateDateTimeUnit( "date", date, false );
+            this.updateDateTimeUnit( "year", year, false );
+          }, this )
+        } );
 
+      this.setInitialDateTime( );
     },
     showError: function( step, errorMessage ) {
       this[ "$" + step ].addClass( "fp-error fp-out-of-range" );
@@ -106,16 +110,18 @@
       //Reset digit
       this.currentDigit = 0;
       this.isActiveLeadingZero = 0;
-      if( step === "day" || step === "month" )
-        this.calendar.show( );
-      else
-        this.calendar.hide( );
+      if( this.options.enableCalendar ) {
+        if( step === "day" || step === "month" )
+          this.calendar.show( );
+        else
+          this.calendar.hide( );
+      }
     },
 
     to12Hour: function( value ) {
       if( this.dateTime.format( "A" ) === "PM" && value > 12 )
         return value - 12;
-      return value;  
+      return value;
     },
 
     to24Hour: function( value ) {
@@ -123,7 +129,7 @@
         return value + 12;
       else if( this.dateTime.format( "A" ) === "AM" && value > 11 )
         return value - 12;
-      return value; 
+      return value;
     },
 
     formatToMoment: function( step, value ) {
@@ -137,7 +143,7 @@
         return value + 1;
       return value;
     },
- 
+
     isValidDigitInput: function( digits ) {
       digits = parseInt( digits, 10 );
       if( this.currentStep === "month" ) {
@@ -218,7 +224,7 @@
           classes = $target.attr( "class" ),
       //figure out which step was clicked
           step = classes.match( this.stepRegExp );
-      if( step.length )
+      if( step && step.length )
         this.activateSelectorTool( step[ 0 ] );
     },
 
@@ -230,9 +236,10 @@
       if( keyCode === 8 ) //backspace
         this.currentDigit -= 1;
 
-      if( keyCode >= 48 && keyCode <= 57 ) {//between 0-9
+      //0-9 with numpad support
+      if( ( keyCode >= 48 && keyCode <= 57 ) || ( keyCode >= 96 && keyCode <= 105 ) ) {
         this.currentDigit += 1;
-        this.updateDigit( this.currentStep, this.currentDigit, keyCode - 48 );
+        this.updateDigit( this.currentStep, this.currentDigit, keyCode % 48 );
       }
 
       if( this.currentDigit === 2 )
@@ -266,7 +273,7 @@
         //We do this so the day does not change
         var offset = this.dateTime.format( "H" ) < 12 ? 12 : -12;
         this.changeDateTimeUnit( "hour", offset );
-      } 
+      }
       else if( this.currentStep === "minute" )
         this.changeDateTimeUnit( this.currentStep, -15 );
       else if( this.currentStep )
@@ -307,18 +314,19 @@
 
     onClickToExit: function( e ) {
       var $target = $( e.target );
-      if( 
+      if(
           //TODO: testing for class is shit but closest doesn't work on td day select
           //for some reason
           !/fp-/.test( $target.attr( "class" ) ) &&
-          !$target.closest( this.$container ).length && 
+          !$target.closest( this.$container ).length &&
           !$target.closest( this.$element ).length ) {
         this.hide( );
       }
     },
 
     onSave: function( ) {
-      this.$element.trigger( "fp:save", [ this.dateTime ] );
+      if( this.isInRange( this.dateTime ) )
+        this.$element.trigger( "fp:save", [ this.dateTime ] );
     },
 
     addEvents: function( ) {
@@ -339,9 +347,19 @@
       this.$document.off( "keydown." + this.id );
       this.$document.off( "keyup." + this.id );
     },
-    setDateTime: function( dateObj ) {
+    setDateTime: function( dateObj, moveNext ) {
       this.dateTime = moment( dateObj );
-      this.calendar.setDate( this.dateTime );
+
+      if( this.options.enableCalendar )
+        this.calendar.setDate( this.dateTime );
+
+      if( !this.isInRange( this.dateTime ) )
+        this.showError( this.currentStep, "Date is out of range, please fix." );
+      else if( this.isError )
+        this.hideError( );
+
+      if( !this.isError && moveNext )
+        this.moveRight( );
     },
     renderDateTime: function( ) {
       this.$month.text( this.dateTime.format( "MM" ) );
@@ -357,8 +375,8 @@
           minutes = m.format( "m" );
       m.zone( this.currentTimeZone );
 
-      //Initial value are done in increments of 15 from now. 
-      //If the time between now and 15 minutes from now is less than 5 minutes, 
+      //Initial value are done in increments of 15 from now.
+      //If the time between now and 15 minutes from now is less than 5 minutes,
       //go onto the next 15.
       if( typeof this.options.initialDateTime === "function" )
         m = this.options.initialDateTime( m.clone( ) );
@@ -370,28 +388,33 @@
       var minDateTime = typeof this.options.minDateTime === "function" && this.options.minDateTime( ),
           maxDateTime = typeof this.options.maxDateTime === "function" && this.options.maxDateTime( ),
           left = right = false;
-      
+
       if( minDateTime ) {
         minDateTime.zone( this.currentTimeZone );
         left = date.diff( minDateTime, "seconds" ) < 0;
       }
       if( maxDateTime ) {
         maxDateTime.zone( this.currentTimeZone );
-        right = date.diff( minDateTime, "seconds" ) > 0;
+        right = date.diff( maxDateTime, "seconds" ) > 0;
       }
 
       return !( right || left )
     },
 
     setTimeZone: function( zone ) {
-      //this.dateTime.zone( zone );
+      this.dateTime.zone( zone );
       this.currentTimeZone = zone;
+
+      if( this.options.enableCalendar )
+      this.calendar.setTimeZone( zone );
     },
 
     dateChange: function( ) {
-      this.calendar.setDate( this.dateTime );
-      if( this.currentStep === "day" || this.currentStep === "month" )
-        this.calendar.render( );
+      if( this.options.enableCalendar ) {
+        this.calendar.setDate( this.dateTime );
+        if( this.currentStep === "day" || this.currentStep === "month" )
+          this.calendar.render( );
+      }
     },
 
     changeDateTimeUnit: function( unit, value ) {
@@ -407,27 +430,17 @@
       this.renderDateTime( );
 
       this.dateChange( );
-    }, 
+    },
     //api
     updateDateTimeUnit: function( unit, value, moveNext ) {
-      this.dateTime.set( unit, value );
-      this.renderDateTime( );
-
-      if( !this.isInRange( this.dateTime ) )
-        this.showError( this.currentStep, "Date is out of range, please fix." );
-      else if( this.isError )
-        this.hideError( );
-
-      if( !this.isError && moveNext )
-        this.moveRight( );
-
-      this.dateChange( );
+      var dateObj = this.dateTime.clone( ).set( unit, value );
+      this.updateDateTime( dateObj, moveNext );
     },
     getDate: function( ) {
       return this.dateTime.clone( );
     },
-    updateDateTime: function( dateObj ) {
-      this.setDateTime( dateObj );
+    updateDateTime: function( dateObj, moveNext ) {
+      this.setDateTime( dateObj, moveNext );
       this.renderDateTime( );
       this.dateChange( );
     },
@@ -462,6 +475,8 @@
     this.date = moment( );
     this.$element = $element;
 
+    this.currentTimeZone = null;
+
     var template = '<div class="fp-cal-container">' +
                       '<div class="fp-cal-nav">' +
                         '<span class="fp-cal-left">&#9668;</span>' +
@@ -491,7 +506,7 @@
   }
 
   //date {Moment}
-  Calendar.prototype.setDate = function( date ) { 
+  Calendar.prototype.setDate = function( date ) {
     this.date = date.clone( );
   };
 
@@ -508,25 +523,17 @@
   };
 
   Calendar.prototype.toggleMonthArrows = function( ) {
-
-    var minDiff = typeof this.options.minDateTime === "function" && 
-                    this.date.clone( ).subtract( 'months', 1 ).endOf( "month" )
-                           .diff( this.options.minDateTime( ), "seconds" ),
-        maxDiff = typeof this.options.maxDateTime === "function" &&
-          this.date.clone( ).add( 'months', 1 ).date( 1 )
-                           .diff( this.options.maxDateTime( ), "seconds" );
-
-    if( minDiff && minDiff < 0 )
-      this.$left.hide( );
-    else
+    if( this.isInMinRange( this.date.clone( ).subtract( 'months', 1 ).endOf( "month" ) ) )
       this.$left.show( );
-
-    if( maxDiff && maxDiff > 0 )
-      this.$right.hide( );
     else
-      this.$right.show( );
+      this.$left.hide( );
 
+    if( this.isInMaxRange( this.date.clone( ).add( 'months', 1 ).date( 1 ) ) )
+      this.$right.show( );
+    else
+      this.$right.hide( );
   };
+
   Calendar.prototype.nextMonth = function( ) {
     this.date.add( "month", 1 );
     this.selectDate( this.date.get( "year" ), this.date.get( "month" ), this.date.get( "date" ) );
@@ -551,7 +558,7 @@
 
     this.selectDate( this.date.get( "year" ), this.date.get( "month" ), $target.attr( "data-date" ) );
   };
- 
+
   Calendar.prototype.highlightDate = function( date ) {
     this.$dates.find( ".active" ).removeClass( "active" );
     this.$dates.find( ".fp-cal-date-" + date ).addClass( "active" );
@@ -564,6 +571,22 @@
     this.buildDates( );
     this.disableOutOfRangeDates( );
     this.highlightDate( this.date.get( "date" ) );
+  };
+
+  Calendar.prototype.isInMinRange = function( date ) {
+    if( typeof this.options.minDateTime !== "function" )
+      return true;
+    var minDate = this.options.minDateTime( );
+    minDate.zone( this.currentTimeZone );
+    return date.diff( minDate, "seconds" ) > 0;
+  };
+
+  Calendar.prototype.isInMaxRange = function( date ) {
+    if( typeof this.options.maxDateTime !== "function" )
+      return true;
+    var maxDate = this.options.maxDateTime( );
+    maxDate.zone( this.currentTimeZone );
+    return date.diff( maxDate, "seconds" ) < 0;
   };
 
   Calendar.prototype.disableOutOfRangeDates = function( ) {
@@ -582,9 +605,8 @@
         dateTmp.add( "months", $this.attr( "data-add-month" ) );
 
       dateTmp.date( $( this ).attr( "data-date" ) );
-      return !!( ( typeof self.options.minDateTime === "function" && dateTmp.diff( self.options.minDateTime( ), "seconds" ) < 0 ) || //left
-        ( typeof self.options.maxDateTime === "function" && dateTmp.diff( self.options.maxDateTime( ), "seconds" ) > 0 ) ); //right
-    } ).addClass( "fp-disabled" ); 
+      return !( self.isInMinRange( dateTmp ) && self.isInMaxRange( dateTmp ) );
+    } ).addClass( "fp-disabled" );
   };
 
   Calendar.prototype.buildDayLabels = function( ) {
@@ -592,12 +614,12 @@
     var labelMaker = this.date.clone( );
 
     for( var i = 0; i < 7; ++i )
-      this.$dayLabelTemplate.clone( ).text( 
+      this.$dayLabelTemplate.clone( ).text(
           labelMaker.day( i ).format( "ddd" ) ).appendTo( this.$days );
   };
 
   Calendar.prototype.buildDates = function( ) {
-    var days = this.date.daysInMonth( ), 
+    var days = this.date.daysInMonth( ),
         dateCalc = this.date.clone( ),
         lastDayOfPrevMonth = this.date.clone( ).subtract( 'months', 1 ).endOf( "month" ).date( ),
         $week = this.$weekTemplate.clone( ),
@@ -612,14 +634,14 @@
           .attr( "data-date", lastDayOfPrevMonth - i )
           .addClass( "fp-cal-date-prev-" + lastDayOfPrevMonth - i )
           .addClass( "fp-not-in-month" ).text( lastDayOfPrevMonth - i )
-          .prependTo( $week ); 
+          .prependTo( $week );
 
     //fill first week starting from days prior
     for( i = 1; i <= 7 - firstWeekDay; ++i )
       this.$dateTemplate.clone( )
           .addClass( "fp-cal-date-" + i )
           .attr( "data-date", i ).text( i )
-          .appendTo( $week ); 
+          .appendTo( $week );
 
     $week.appendTo( this.$dates );
     $week = this.$weekTemplate.clone( );
@@ -643,9 +665,9 @@
           .addClass( "fp-cal-date-next-" + i )
           .attr( "data-add-month", 1 )
           .attr( "data-date", i ).addClass( "fp-not-in-month" ).text( i )
-          .appendTo( $week ); 
+          .appendTo( $week );
   };
- 
+
   Calendar.prototype.render = function( ) {
     this.buildTemplate( );
     this.removeEvents( );
@@ -666,6 +688,10 @@
     return this.$container;
   };
 
+  Calendar.prototype.setTimeZone = function( zone ) {
+    this.currentTimeZone = zone;
+  };
+
   $.fn[ pluginName ] = function( optionsOrMethod ) {
     var $this,
         _arguments = Array.prototype.slice.call( arguments ),
@@ -676,7 +702,7 @@
     else {
       return this.each(function ( ) {
         $this = $( this );
-        if( !$this.data( name ) && ( typeof optionsOrMethod ).toLowerCase( ) === "object" ) 
+        if( !$this.data( name ) && ( typeof optionsOrMethod ).toLowerCase( ) === "object" )
           $this.data( name, new FilthyPillow( $this, optionsOrMethod ) );
         else if( ( typeof optionsOrMethod ).toLowerCase( ) === "string" ) {
           if( ~$.inArray( optionsOrMethod, methods ) )
