@@ -1,4 +1,4 @@
-/* jquery.filthypillow v.1.1.1
+/* jquery.filthypillow v.1.2.0
  * simple and fancy datetimepicker
  * by aef
  */
@@ -11,7 +11,10 @@
         maxDateTime: null, //function returns moment obj
         initialDateTime: null, //function returns moment obj
         enableCalendar: true,
-        steps: [ "month", "day", "hour", "minute", "meridiem" ]
+        steps: [ "month", "day", "hour", "minute", "meridiem" ],
+        calendar: {
+          saveOnDateSelect: false
+        }
       },
       methods = [ "show", "hide", "destroy", "updateDateTime", "updateDateTimeUnit", "setTimeZone" ],
       returnableMethods = [ "getDate" ];
@@ -78,10 +81,13 @@
         {
           minDateTime: this.options.minDateTime,
           maxDateTime: this.options.maxDateTime,
-          onSelectDate: $.proxy( function( year, month, date ) {
+          onSelectDate: $.proxy( function( year, month, date, opts ) {
             this.updateDateTimeUnit( "month", month, false );
             this.updateDateTimeUnit( "date", date, false );
             this.updateDateTimeUnit( "year", year, false );
+
+            if( this.options.calendar.saveOnDateSelect && opts.activeDateClicked )
+              this.$saveButton.click( );
           }, this )
         } );
 
@@ -259,12 +265,10 @@
       else if( keyCode === 9 ) //tab
         this.moveRight( );
 
-      if( keyCode === 13 ) { //enter - lets them save on enter
+      if( keyCode === 13 ) //enter - lets them save on enter
         this.$saveButton.click( );
-        return true;
-      }
 
-      //prevents page from moving left/right/up/down
+      //prevents page from moving left/right/up/down/submitting form on enter
       return false;
     },
 
@@ -546,17 +550,19 @@
     this.render( );
   };
 
-  Calendar.prototype.selectDate = function( year, month, date ) {
+  Calendar.prototype.selectDate = function( year, month, date, opts ) {
     if( typeof this.options.onSelectDate === "function" )
-      this.options.onSelectDate( year, month, date );
+      this.options.onSelectDate( year, month, date, opts || { } );
     this.highlightDate( date );
   };
 
   Calendar.prototype.onSelectDate = function( e ) {
-    var $target = $( e.target );
-    this.date.add( "months", $target.attr( "data-add-month" ) );
+    var $target = $( e.target ),
+        addMonths = $target.attr( "data-add-month" );
 
-    this.selectDate( this.date.get( "year" ), this.date.get( "month" ), $target.attr( "data-date" ) );
+    this.date.add( "months", addMonths );
+
+    this.selectDate( this.date.get( "year" ), this.date.get( "month" ), $target.attr( "data-date" ), { activeDateClicked: !addMonths } );
   };
 
   Calendar.prototype.highlightDate = function( date ) {
