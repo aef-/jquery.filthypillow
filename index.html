@@ -24,10 +24,11 @@ layout: index
 <h2><a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
 
 {% highlight javascript %}
-var $fp = $( ".filthypillow-1" );
+var $fp = $( ".filthypillow-1" ),
+    now = moment( ).subtract( "seconds", 1 );
 $fp.filthypillow( { 
   minDateTime: function( ) {
-    return moment( ).subtract( "seconds", 1 ); //now
+    return now;
   } 
 } );
 $fp.on( "focus", function( ) {
@@ -40,11 +41,12 @@ $fp.on( "fp:save", function( e, dateObj ) {
 {% endhighlight %}
 <p><div class="input-group"><input class="filthypillow-1" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div></p>
 <script>
-var $fp = $( ".filthypillow-1" );
+var $fp = $( ".filthypillow-1" ),
+    now = moment( ).subtract( "seconds", 1 );
 
 $fp.filthypillow( {
 minDateTime: function( ) {
-return moment( ).subtract( "seconds", 1 ); //now
+return now;
 }   
 } );
 $fp.on( "focus", function( ) {
