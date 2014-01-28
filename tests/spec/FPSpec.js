@@ -32,7 +32,9 @@ describe("FilthyPillow", function() {
       '<input class="filthypillow-6"/>' +
       '<input class="filthypillow-7"/>' +
       '<input class="filthypillow-8"/>' +
-      '<input class="filthypillow-9"/>'
+      '<input class="filthypillow-9"/>' +
+      '<input class="filthypillow-10"/>' +
+      '<form action="javascript:void(0)" id="fp11-form"><input class="filthypillow-11"/><input type="submit" value="Submit"/></form>'
     );
 
 
@@ -91,6 +93,16 @@ describe("FilthyPillow", function() {
     $fp9.filthypillow( {
       steps: [ "month", "day" ]
     } );
+    $fp10 = $( ".filthypillow-10" );
+    $fp10.filthypillow( {
+      calendar: {
+        saveOnDateSelect: true
+      }
+    } );
+    $fp11form = $( "#fp11-form" );
+    $fp11 = $( ".filthypillow-11" );
+    $fp11.filthypillow( {
+    } );
   } );
 
   afterEach(function() {
@@ -104,6 +116,8 @@ describe("FilthyPillow", function() {
 
     $fp8.filthypillow( "destroy" );
     $fp9.filthypillow( "destroy" );
+    $fp10.filthypillow( "destroy" );
+    $fp11.filthypillow( "destroy" );
   } );
 
   describe( "Behavior", function( ) {
@@ -313,6 +327,18 @@ describe("FilthyPillow", function() {
       $fp9.next( ".fp-container" ).find( ".fp-minute" ).click( );
       expect($fp9).toHaveActiveStep( "day" );
     });
+    it("should save on appropriate date select", function() {
+      var spyEvent = spyOnEvent($fp10.selector,'fp:save')
+      $fp10.filthypillow( "show" );
+      $fp10.next( ".fp-container" ).find( ".fp-cal-left" ).click( );
+      expect( spyEvent ).not.toHaveBeenTriggered( );
+      $fp10.filthypillow( "updateDateTime", oct2013 );
+      $fp10.next( ".fp-container" ).find( ".fp-not-in-month[data-date='"+30+"']" ).click( );
+      expect( spyEvent ).not.toHaveBeenTriggered( );
+
+      $fp10.next( ".fp-container" ).find( ".fp-cal-date-2").click( );
+      expect( spyEvent ).toHaveBeenTriggered( );
+    }); 
   } );
 
   describe( "API", function( ) {

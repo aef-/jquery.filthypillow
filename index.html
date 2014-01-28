@@ -37,7 +37,7 @@ $fp.on( "focus", function( ) {
 $fp.on( "fp:save", function( e, dateObj ) {
   $fp.val( dateObj.format( "MMM DD YYYY hh:mm A" ) );
   $fp.filthypillow( "hide" );
-} );                                                     
+} );
 {% endhighlight %}
 <p><div class="input-group"><input class="filthypillow-1" /><span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span></div></p>
 <script>
@@ -85,7 +85,7 @@ initialDateTime: function( m ) {
 <h4>Example</h4>
 {% highlight javascript %}
 minDateTime: function( ) {
-  return moment( ); //now
+  return moment( ).subtract( "days", 1 ); //one day ago
 }
 {% endhighlight %}
 <h3>maxDateTime</h3>
@@ -106,6 +106,16 @@ maxDateTime: function( ) {
 <p>Show the calendar when steps day or month are activated.</p>
 <h4>Default</h4>
 <p>true</p>
+<h3>calendar.saveOnDateSelect</h3>
+<p>Trigger save when an active date is selected within a calendar. This excludes date changes triggered from changing the month or selecting a date in a different month.</p>
+<h4>Default</h4>
+<p>false</p> 
+<h4>Example</h4>
+{% highlight javascript %}
+calendar: {
+  saveOnDateSelect: true
+}
+{% endhighlight %}
 <h2><a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
 <h3>fp:save</h3>
 <p>Passes selected date object.</p>
