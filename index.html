@@ -27,7 +27,7 @@ layout: index
 var $fp = $( ".filthypillow-1" );
 $fp.filthypillow( { 
   minDateTime: function( ) {
-    return moment( ); //now
+    return moment( ).subtract( "seconds", 1 ); //now
   } 
 } );
 $fp.on( "focus", function( ) {
@@ -44,7 +44,7 @@ var $fp = $( ".filthypillow-1" );
 
 $fp.filthypillow( {
 minDateTime: function( ) {
-return moment( ); //now
+return moment( ).subtract( "seconds", 1 ); //now
 }   
 } );
 $fp.on( "focus", function( ) {
