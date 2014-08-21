@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>jquery.filthypillow</id>
+    <version>1.2.0</version>
+    <authors>aef-</authors>
+    <owners>aef-</owners>
+    <projectUrl>https://github.com/aef-/jquery.filthypillow</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A fancy and small calendar and date-time picker</description>
+    <copyright>Copyright 2014</copyright>
+    <tags>calendar datetime time datepicker timepicker datetimepicker</tags>
+    <dependencies>
+      <dependency id="jquery" version="1.9.1" />
+      <dependency id="moment" version="2.2.1" />
+    </dependencies>
+  </metadata>
+</package>
