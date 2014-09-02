@@ -28,7 +28,9 @@
       returnableMethods = [ "getDate" ];
 
   function FilthyPillow( $element, options ) {
+		var calendarOptions = $.extend( {}, defaults.calendar, options.calendar || {} );
     this.options = $.extend( {}, defaults, options );
+		this.options.calendar = calendarOptions;
 
     this.$element = $element;
     this.setup( );
