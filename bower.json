@@ -1,0 +1,28 @@
+{
+  "name": "jquery.filthypillow",
+  "main": [
+		"jquery.filthypillow.js",
+		"jquery.filthypillow.css"
+	],
+  "description": "A small and fancy calendar/date-time picker with tests",
+  "version": "1.2.2",
+  "homepage": "https://github.com/aef-/jquery.filthypillow",
+  "authors": [
+    "aef <aef@catch-colt.com>"
+  ],
+  "license": "Public Domain",
+	"dependencies": {
+    "jquery": ">=1.9.1",
+    "moment": ">=2.2.1"
+  },
+  "keywords": [ "calendar", "datetime", "time", "datepicker", "timepicker", "datetimepicker" ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "*.json",
+    "*.nuspec",
+  ]
+}
