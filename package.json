@@ -1,6 +1,6 @@
 {
   "name": "jquery.filthypillow",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "A fancy and small calendar and date-time picker.",
   "main": "./jquery.filthypillow.js",
   "directories": {
