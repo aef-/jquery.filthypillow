@@ -1,8 +1,16 @@
-/* jquery.filthypillow v.1.2.0
+/* jquery.filthypillow v.1.3.0
  * simple and fancy datetimepicker
  * by aef
  */
-( function( $, window, document, undefined ) {
+( function( factory ) {
+	if ( typeof define === 'function' && define.amd ) {
+		define( [ 'jquery' ], factory );
+	} else if ( typeof exports === 'object' ) {
+		module.exports = factory;
+	} else {
+		factory( jQuery );
+	}
+} ( function( $ ) {
   var pluginName = "filthypillow",
       name = "plugin_" + pluginName,
       defaults = {
@@ -12,15 +20,19 @@
         initialDateTime: null, //function returns moment obj
         enableCalendar: true,
         steps: [ "month", "day", "hour", "minute", "meridiem" ],
+				exitOnBackgroundClick: true,
         calendar: {
+					isPinned: false,
           saveOnDateSelect: false
         }
       },
       methods = [ "show", "hide", "destroy", "updateDateTime", "updateDateTimeUnit", "setTimeZone" ],
-      returnableMethods = [ "getDate" ];
+      returnableMethods = [ "getDate", "isValid" ];
 
   function FilthyPillow( $element, options ) {
+		var calendarOptions = $.extend( {}, defaults.calendar, options.calendar || {} );
     this.options = $.extend( {}, defaults, options );
+		this.options.calendar = calendarOptions;
 
     this.$element = $element;
     this.setup( );
@@ -119,7 +131,7 @@
       if( this.options.enableCalendar ) {
         if( step === "day" || step === "month" )
           this.calendar.show( );
-        else
+        else if( !this.options.calendar.isPinned ) 
           this.calendar.hide( );
       }
     },
@@ -205,7 +217,7 @@
 
       //console.info( "Fake Value: " + fakeValue );
 
-      if( !this.isValidDigitInput( fakeValue ) ) {
+			if( !this.isValidDigitInput( fakeValue ) ) {
         if( this.currentDigit === 2 )
           this.currentDigit = 1;
         return;
@@ -339,7 +351,8 @@
 
       this.$document.on( "keydown." + this.id, $.proxy( this.onKeyDown, this ) );
       this.$document.on( "keyup." + this.id, $.proxy( this.onKeyUp, this ) );
-      this.$window.on( "click." + this.id, $.proxy( this.onClickToExit, this ) );
+			if( this.options.exitOnBackgroundClick )
+				this.$window.on( "click." + this.id, $.proxy( this.onClickToExit, this ) );
     },
 
     removeEvents: function( ) {
@@ -395,11 +408,11 @@
 
       if( minDateTime ) {
         minDateTime.zone( this.currentTimeZone );
-        left = date.diff( minDateTime, "seconds" ) < 0;
+        left = date.diff( minDateTime, "second" ) < 0;
       }
       if( maxDateTime ) {
         maxDateTime.zone( this.currentTimeZone );
-        right = date.diff( maxDateTime, "seconds" ) > 0;
+        right = date.diff( maxDateTime, "second" ) > 0;
       }
 
       return !( right || left )
@@ -443,6 +456,9 @@
     getDate: function( ) {
       return this.dateTime.clone( );
     },
+		isValid: function( ) {
+			return !this.isError;
+		},
     updateDateTime: function( dateObj, moveNext ) {
       this.setDateTime( dateObj, moveNext );
       this.renderDateTime( );
@@ -527,25 +543,25 @@
   };
 
   Calendar.prototype.toggleMonthArrows = function( ) {
-    if( this.isInMinRange( this.date.clone( ).subtract( 'months', 1 ).endOf( "month" ) ) )
+    if( this.isInMinRange( this.date.clone( ).subtract( 1, 'month' ).endOf( "month" ) ) )
       this.$left.show( );
     else
       this.$left.hide( );
 
-    if( this.isInMaxRange( this.date.clone( ).add( 'months', 1 ).date( 1 ) ) )
+    if( this.isInMaxRange( this.date.clone( ).add( 1, 'month' ).date( 1 ) ) )
       this.$right.show( );
     else
       this.$right.hide( );
   };
 
   Calendar.prototype.nextMonth = function( ) {
-    this.date.add( "month", 1 );
+    this.date.add( 1, 'month' );
     this.selectDate( this.date.get( "year" ), this.date.get( "month" ), this.date.get( "date" ) );
     this.render( );
   };
 
   Calendar.prototype.prevMonth = function( ) {
-    this.date.subtract( "month", 1 );
+    this.date.subtract( 1, 'month' );
     this.selectDate( this.date.get( "year" ), this.date.get( "month" ), this.date.get( "date" ) );
     this.render( );
   };
@@ -558,9 +574,9 @@
 
   Calendar.prototype.onSelectDate = function( e ) {
     var $target = $( e.target ),
-        addMonths = $target.attr( "data-add-month" );
+        addMonths = parseInt( $target.attr( "data-add-month" ), 10 );
 
-    this.date.add( "months", addMonths );
+    this.date.add( addMonths, 'month' );
 
     this.selectDate( this.date.get( "year" ), this.date.get( "month" ), $target.attr( "data-date" ), { activeDateClicked: !addMonths } );
   };
@@ -584,7 +600,7 @@
       return true;
     var minDate = this.options.minDateTime( );
     minDate.zone( this.currentTimeZone );
-    return date.diff( minDate, "seconds" ) > 0;
+    return date.diff( minDate, "second" ) > 0;
   };
 
   Calendar.prototype.isInMaxRange = function( date ) {
@@ -592,7 +608,7 @@
       return true;
     var maxDate = this.options.maxDateTime( );
     maxDate.zone( this.currentTimeZone );
-    return date.diff( maxDate, "seconds" ) < 0;
+    return date.diff( maxDate, "second" ) < 0;
   };
 
   Calendar.prototype.disableOutOfRangeDates = function( ) {
@@ -608,7 +624,7 @@
       $this = $( this );
 
       if( $this.attr( "data-add-month" ) )
-        dateTmp.add( "months", $this.attr( "data-add-month" ) );
+        dateTmp.add( $this.attr( "data-add-month" ), 'month' );
 
       dateTmp.date( $( this ).attr( "data-date" ) );
       return !( self.isInMinRange( dateTmp ) && self.isInMaxRange( dateTmp ) );
@@ -627,7 +643,7 @@
   Calendar.prototype.buildDates = function( ) {
     var days = this.date.daysInMonth( ),
         dateCalc = this.date.clone( ),
-        lastDayOfPrevMonth = this.date.clone( ).subtract( 'months', 1 ).endOf( "month" ).date( ),
+        lastDayOfPrevMonth = this.date.clone( ).subtract( 1, 'month' ).endOf( "month" ).date( ),
         $week = this.$weekTemplate.clone( ),
         firstWeekDay = dateCalc.date( 1 ).weekday( ),
         lastWeekDay = dateCalc.date( days ).weekday( ),
@@ -719,4 +735,4 @@
       } );
     }
   };
-} )( jQuery, window, document );
+} ) );

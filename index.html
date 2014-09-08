@@ -102,6 +102,11 @@ maxDateTime: function( ) {
 <p>Disable/enable steps by passing an array. Removing steps will prevent the user from activating that step (by clicking or using left/right arrows), but it will not hide the step (which should be done in CSS).</p>
 <h4>Default</h4>
 <p>[ "month", "day", "hour", "minute", "meridiem" ]</p>
+<h3>exitOnBackgroundClick</h3>
+<p>If the user clicks anywhere outside filthypillow (except for when the object has a class prepended with fp-), it will hide filthypillow.</p>
+<h4>Default</h4>
+<p>true</p>
+
 <h3>enableCalendar</h3>
 <p>Show the calendar when steps day or month are activated.</p>
 <h4>Default</h4>
@@ -114,6 +119,16 @@ maxDateTime: function( ) {
 {% highlight javascript %}
 calendar: {
   saveOnDateSelect: true
+}
+{% endhighlight %}
+<h3>calendar.isPinned</h3>
+<p>Keep the calendar showing even when the user has selected the hours, minutes, meridiem boxes.</p>
+<h4>Default</h4>
+<p>false</p> 
+<h4>Example</h4>
+{% highlight javascript %}
+calendar: {
+  isPinned: true
 }
 {% endhighlight %}
 <h2><a name="events" class="anchor" href="#events"><span class="octicon octicon-link"></span></a>Events</h2>
@@ -134,6 +149,7 @@ $( ".datetime" ).on( "fp:save", function( e, dateObj ) {
 <h3>changeDateTimeUnit( unit, value )</h3>
 <h3>setTimeZone( zone )</h3>
 <h3>getDate( ): DateObj</h3>
+<h3>isValid( ): Boolean</h3>
 
                 <h2><a name="tests" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>Tests</h2>
                 <p>Run tests <a href="/jquery.filthypillow/tests">here</a>.</p>
