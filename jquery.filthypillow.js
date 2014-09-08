@@ -20,7 +20,9 @@
         initialDateTime: null, //function returns moment obj
         enableCalendar: true,
         steps: [ "month", "day", "hour", "minute", "meridiem" ],
+				exitOnBackgroundClick: true,
         calendar: {
+					isPinned: false,
           saveOnDateSelect: false
         }
       },
@@ -129,7 +131,7 @@
       if( this.options.enableCalendar ) {
         if( step === "day" || step === "month" )
           this.calendar.show( );
-        else
+        else if( !this.options.calendar.isPinned ) 
           this.calendar.hide( );
       }
     },
@@ -215,7 +217,7 @@
 
       //console.info( "Fake Value: " + fakeValue );
 
-      if( !this.isValidDigitInput( fakeValue ) ) {
+			if( !this.isValidDigitInput( fakeValue ) ) {
         if( this.currentDigit === 2 )
           this.currentDigit = 1;
         return;
@@ -349,7 +351,8 @@
 
       this.$document.on( "keydown." + this.id, $.proxy( this.onKeyDown, this ) );
       this.$document.on( "keyup." + this.id, $.proxy( this.onKeyUp, this ) );
-      this.$window.on( "click." + this.id, $.proxy( this.onClickToExit, this ) );
+			if( this.options.exitOnBackgroundClick )
+				this.$window.on( "click." + this.id, $.proxy( this.onClickToExit, this ) );
     },
 
     removeEvents: function( ) {
@@ -453,9 +456,9 @@
     getDate: function( ) {
       return this.dateTime.clone( );
     },
-	isValid: function( ) {
-	  return !this.isError;
-	},
+		isValid: function( ) {
+			return !this.isError;
+		},
     updateDateTime: function( dateObj, moveNext ) {
       this.setDateTime( dateObj, moveNext );
       this.renderDateTime( );

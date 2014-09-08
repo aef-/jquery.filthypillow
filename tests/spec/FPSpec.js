@@ -82,7 +82,11 @@ describe("FilthyPillow", function() {
       },
       maxDateTime: function( ) {
         return moment( );
-      }
+      },
+			exitOnBackgroundClick: false,
+			calendar: {
+				isPinned: true
+			}
     } );
 
     $fp8 = $( ".filthypillow-8" );
@@ -253,7 +257,16 @@ describe("FilthyPillow", function() {
     it("should start on step declared in initialization", function() {
       $fp4.filthypillow( "show" );
       expect($fp4).toHaveActiveStep( "month" );
+		});
+
+		it("should not hide when non-calendar is clicked exitOnCalendarClick is false", function() {
+      $fp7.filthypillow( "show" );
+      $fp7.click( );
+      expect($fp7).toShowDatePicker( );
+      $( "body" ).click( );
+      expect($fp7).toShowDatePicker( );
     });
+
     it("should prevent the selection of a date previous to minDateTime", function() {
       $fp6.filthypillow( "show" );
       triggerKey( "keydown", keys.DOWN_ARROW );
@@ -273,6 +286,20 @@ describe("FilthyPillow", function() {
       triggerKey( "keydown", keys.LEFT_ARROW );
       triggerKey( "keydown", keys.DOWN_ARROW );
       expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "hour" );
+    });
+
+		it("should keep calendar any date/time box is active and pinned config is set to true", function() {
+      $fp7.filthypillow( "show" );
+      $fp7.next( ".fp-container" ).find( ".fp-month" ).click( );
+      expect($fp7).toShowCalendar( );
+      $fp7.next( ".fp-container" ).find( ".fp-day" ).click( );
+      expect($fp7).toShowCalendar( );
+      $fp7.next( ".fp-container" ).find( ".fp-hour" ).click( );
+      expect($fp7).toShowCalendar( );
+      $fp7.next( ".fp-container" ).find( ".fp-minute" ).click( );
+      expect($fp7).toShowCalendar( );
+      $fp7.next( ".fp-container" ).find( ".fp-meridiem" ).click( );
+      expect($fp7).toShowCalendar( );
     });
 
     it("should prevent the selection of a date later to maxDateTime", function() {
