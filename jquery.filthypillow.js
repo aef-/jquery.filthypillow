@@ -25,7 +25,7 @@
         }
       },
       methods = [ "show", "hide", "destroy", "updateDateTime", "updateDateTimeUnit", "setTimeZone" ],
-      returnableMethods = [ "getDate" ];
+      returnableMethods = [ "getDate", "isValid" ];
 
   function FilthyPillow( $element, options ) {
 		var calendarOptions = $.extend( {}, defaults.calendar, options.calendar || {} );
@@ -453,6 +453,9 @@
     getDate: function( ) {
       return this.dateTime.clone( );
     },
+	isValid: function( ) {
+	  return !this.isError;
+	},
     updateDateTime: function( dateObj, moveNext ) {
       this.setDateTime( dateObj, moveNext );
       this.renderDateTime( );

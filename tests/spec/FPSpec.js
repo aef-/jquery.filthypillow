@@ -351,6 +351,18 @@ describe("FilthyPillow", function() {
       expect( show ).toThrow( );
     });
 
+	it("should return invalid for dates with errors", function() {
+      $fp6.filthypillow( "show" );
+      triggerKey( "keyup", keys.ZERO );
+      triggerKey( "keyup", keys.FOUR );
+      expect( $fp6.filthypillow( "isValid" ) ).not.toBeTruthy( );
+    });
+
+	it("should return valid for dates without errors", function() {
+      $fp1.filthypillow( "show" );
+      expect( $fp6.filthypillow( "isValid" ) ).toBeTruthy( );
+    });
+
     it("should show when show function is called", function() {
       $fp1.filthypillow( "show" );
       expect($fp1).toShowDatePicker( );
