@@ -47,7 +47,7 @@
                   '<span class="fp-hour fp-option"></span>:<span class="fp-minute fp-option"></span>' +
                   '<span class="fp-meridiem fp-option"></span>' +
                 '</div>' +
-                '<div class="fp-save"><button class="btn btn-primary fp-save-button">Save</button></div>' +
+                '<div class="fp-save"><button class="btn btn-primary fp-save-button" type="button">Save</button></div>' +
                 '<div class="fp-description"></div>' +
                 '<div class="fp-errors"></div>' +
                 '<div class="fp-calendar-calendar"></div>' +
