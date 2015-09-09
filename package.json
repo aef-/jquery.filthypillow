@@ -19,7 +19,7 @@
 		"jquery.filthypillow.css",
 		"README.md"
 	],
-	"keywords": [ "calendar", "datetime", "time", "datepicker", "timepicker", "datetimepicker" ],
+	"keywords": [ "jquery-plugin", "calendar", "datetime", "time", "datepicker", "timepicker", "datetimepicker" ],
   "homepage": "https://github.com/aef-/jquery.filthypillow",
 	"jam": {
 		"dependencies": {
