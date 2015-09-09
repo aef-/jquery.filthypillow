@@ -190,19 +190,12 @@
         return;
       }
 
-      /*
-      console.info( "Value: " + value );
-      console.info( "Moment Value: " + value );
-      console.info( "Digit: " + digit );
-      */
       if( digit === 2 && !this.isActiveLeadingZero ) {
         precedingDigit = this.dateTime.get( step );
-        //console.info( "precedingDigitReal: " + precedingDigit );
         if( step === "hour" )
           precedingDigit = this.to12Hour( precedingDigit )
         else
           precedingDigit = this.formatFromMoment( step, precedingDigit );
-        //console.info( "precedingDigit: " + precedingDigit );
         fakeValue = parseInt( precedingDigit + "" + value, 10 );
       }
       else
@@ -214,8 +207,6 @@
         fakeValue = this.to24Hour( fakeValue );
       else
         fakeValue = this.formatToMoment( step, fakeValue );
-
-      //console.info( "Fake Value: " + fakeValue );
 
 			if( !this.isValidDigitInput( fakeValue ) ) {
         if( this.currentDigit === 2 )
@@ -624,9 +615,9 @@
       $this = $( this );
 
       if( $this.attr( "data-add-month" ) )
-        dateTmp.add( $this.attr( "data-add-month" ), 'month' );
+        dateTmp.add( parseInt( $this.attr( "data-add-month" ), 10 ), 'month' );
 
-      dateTmp.date( $( this ).attr( "data-date" ) );
+      dateTmp.date( parseInt( $( this ).attr( "data-date" ), 10 ) );
       return !( self.isInMinRange( dateTmp ) && self.isInMaxRange( dateTmp ) );
     } ).addClass( "fp-disabled" );
   };
