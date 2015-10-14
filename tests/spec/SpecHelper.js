@@ -11,6 +11,10 @@ beforeEach(function() {
     },
     toHaveDate: function( date, step ) {
       return this.actual[ step ]( ) === date[ step ]( );
+    },
+    toHaveShown: function( text, step ) {
+      return this.actual.next( ".fp-container" ).find( ".fp-option.fp-" + step ).text( ) == text;
     }
+
   });
 });

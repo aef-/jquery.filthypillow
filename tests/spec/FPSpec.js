@@ -9,11 +9,12 @@ describe("FilthyPillow", function() {
         ENTER: 13,
         ZERO: 48,
         ONE: 49,
+        TWO: 50,
         FOUR: 52,
         NUMPAD_ZERO: 96,
         NUMPAD_ONE: 97
       },
-      $fp1, $fp2, $fp3, $fp4, $fp5, $fp6, $fp7, $fp8, $fp9, $document;
+      $fp1, $fp2, $fp3, $fp4, $fp5, $fp6, $fp7, $fp8, $fp9, $fp10, $fp11, $fp12, $document;
 
   function triggerKey( type, keyCode, shiftKey ) {
     var e = $.Event( type );
@@ -34,6 +35,7 @@ describe("FilthyPillow", function() {
       '<input class="filthypillow-8"/>' +
       '<input class="filthypillow-9"/>' +
       '<input class="filthypillow-10"/>' +
+      '<input class="filthypillow-12"/>' +
       '<form action="javascript:void(0)" id="fp11-form"><input class="filthypillow-11"/><input type="submit" value="Submit"/></form>'
     );
 
@@ -107,6 +109,15 @@ describe("FilthyPillow", function() {
     $fp11 = $( ".filthypillow-11" );
     $fp11.filthypillow( {
     } );
+
+    $fp12 = $( ".filthypillow-12" );
+    $fp12.filthypillow( {
+      enable24HourTime: true,
+      initialDateTime: function( m ) {
+        return m.hour( 1 );
+      }
+    } );
+
   } );
 
   afterEach(function() {
@@ -122,6 +133,7 @@ describe("FilthyPillow", function() {
     $fp9.filthypillow( "destroy" );
     $fp10.filthypillow( "destroy" );
     $fp11.filthypillow( "destroy" );
+    $fp12.filthypillow( "destroy" );
   } );
 
   describe( "Behavior", function( ) {
@@ -343,6 +355,21 @@ describe("FilthyPillow", function() {
       $fp8.filthypillow( "show" );
       expect($fp8).not.toShowCalendar( );
     });
+
+    it("should skip meridiem when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      $fp12.next( ".fp-container" ).find( ".fp-minute" ).click( );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      expect($fp12).toHaveActiveStep( "month" );
+    });
+
+    it("should hide meridiem when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      var $meridiem = $fp12.next( ".fp-container" ).find( ".fp-meridiem" );
+      expect( $meridiem ).not.toBeVisible( );
+      expect( $meridiem ).toBeEmpty( );
+    });
+
     it("should disable excluded steps from being activated", function() {
       $fp9.filthypillow( "show" );
       expect($fp9).toHaveActiveStep( "day" );
@@ -555,7 +582,54 @@ describe("FilthyPillow", function() {
       expect( $fp1.filthypillow( "getDate" ) ).toHaveDate( now.hour( 4 ), "hour" );
     } );
 
-     it("should set hour to 10 and move to next step <1><0>", function() {
+    it("should increment hour by 1 <UP ARROW> when calendar is enabled", function() {
+      $fp12.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keydown", keys.UP_ARROW );
+      expect( $fp12.filthypillow( "getDate" ) ).toHaveDate( now.hour( 2 ), "hour" );
+    } );
+
+    it("should increment hour by 1 <UP ARROW> when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keydown", keys.UP_ARROW );
+      expect( $fp12 ).toHaveShown( "02", "hour" );
+    } );
+
+    it("should decrease hour by 1 <UP ARROW> when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keydown", keys.DOWN_ARROW );
+      expect( $fp12 ).toHaveShown( "00", "hour" );
+    } );
+
+    it("should go to 23 <DOWN ARROW> when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keydown", keys.DOWN_ARROW );
+      triggerKey( "keydown", keys.DOWN_ARROW );
+      expect( $fp12 ).toHaveShown( "23", "hour" );
+    } );
+
+    it("should set hour to 20 and move to next step <2><0> when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keyup", keys.TWO );
+      triggerKey( "keyup", keys.ZERO );
+      expect( $fp12 ).toHaveActiveStep( "minute" );
+      expect( $fp12 ).toHaveShown( 20, "hour" );
+    } );
+
+    it("should set hour to 2X and not move to next step when 24 hour time is enabled", function() {
+      $fp12.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keyup", keys.TWO );
+      expect( $fp12 ).toHaveActiveStep( "hour" );
+      expect( $fp12 ).toHaveShown( 2, "hour" );
+    } );
+
+
+    it("should set hour to 10 and move to next step <1><0>", function() {
       $fp1.filthypillow( "show" );
       triggerKey( "keydown", keys.RIGHT_ARROW );
       triggerKey( "keyup", keys.ONE );

@@ -21,6 +21,7 @@
         enableCalendar: true,
         steps: [ "month", "day", "hour", "minute", "meridiem" ],
 				exitOnBackgroundClick: true,
+        enable24HourTime: false,
         calendar: {
 					isPinned: false,
           saveOnDateSelect: false
@@ -31,7 +32,13 @@
 
   function FilthyPillow( $element, options ) {
 		var calendarOptions = $.extend( {}, defaults.calendar, options.calendar || {} );
+
+
+    if( options.enable24HourTime && !options.steps ) //remove meridiem
+      options.steps = defaults.steps.slice( 0, -1 );
+
     this.options = $.extend( {}, defaults, options );
+
 		this.options.calendar = calendarOptions;
 
     this.$element = $element;
@@ -88,6 +95,8 @@
       this.$descriptionBox = this.$container.find( ".fp-description" );
 
 
+      if( this.options.enable24HourTime )
+        this.$meridiem.hide( );
       if( this.options.enableCalendar )
         this.calendar = new Calendar( this.$container.find( ".fp-calendar-calendar" ),
         {
@@ -203,8 +212,10 @@
 
       fakeValue = fakeValue || value;
 
-      if( step === "hour" ) //this is retain the current meridiem
-        fakeValue = this.to24Hour( fakeValue );
+      if( step === "hour" ) { //this is retain the current meridiem
+        if( !this.options.enable24HourTime )
+          fakeValue = this.to24Hour( fakeValue );
+      }
       else
         fakeValue = this.formatToMoment( step, fakeValue );
 
@@ -220,7 +231,7 @@
         moveNext = true;
       else if( step === "date" && value > 3 )
         moveNext = true;
-      else if( step === "hour" && value > 1 )
+      else if( step === "hour" && ( ( value > 1 && !this.options.enable24HourTime ) || value > 2 ) )
         moveNext = true;
       else if( step === "minute" && value > 5 )
         moveNext = true;
@@ -291,8 +302,8 @@
 
     moveUp: function( ) {
       if( this.currentStep === "meridiem" ) {
-        //TODO use function
         var offset = parseInt( this.dateTime.format( "H" ), 10 ) < 12 ? 12 : -12;
+
         this.changeDateTimeUnit( "hour", offset );
       }
       else if( this.currentStep === "minute" )
@@ -372,9 +383,10 @@
     renderDateTime: function( ) {
       this.$month.text( this.dateTime.format( "MM" ) );
       this.$day.text( this.dateTime.format( "DD" ) );
-      this.$hour.text( this.dateTime.format( "hh" ) );
+      this.$hour.text( this.dateTime.format( !this.options.enable24HourTime ? "hh" : "HH" )  );
       this.$minute.text( this.dateTime.format( "mm" ) );
-      this.$meridiem.text( this.dateTime.format( "A" ) );
+      if( !this.options.enable24HourTime )
+        this.$meridiem.text( this.dateTime.format( "A" ) );
 
       this.$descriptionBox.text( this.dateTime.format( "LLLL" ) );
     },
