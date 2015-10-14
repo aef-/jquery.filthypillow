@@ -435,6 +435,7 @@
         if( this.currentStep === "day" || this.currentStep === "month" )
           this.calendar.render( );
       }
+      this.$element.trigger("fp:datetimechange", [ this.dateTime ]);
     },
 
     changeDateTimeUnit: function( unit, value ) {

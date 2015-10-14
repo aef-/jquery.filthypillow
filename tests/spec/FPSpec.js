@@ -506,6 +506,29 @@ describe("FilthyPillow", function() {
       expect( spyEvent ).not.toHaveBeenTriggered( );
     } );
 
+    it("should trigger fp:datetimechange on calendar select", function () {
+      $fp1.filthypillow( "updateDateTime", oct2013 );
+      var spyEvent = spyOnEvent($fp1.selector,'fp:datetimechange');
+      $fp1.filthypillow( "show" );
+      $fp1.next( ".fp-container" ).find( ".fp-cal-date-2").click( );
+      expect(spyEvent).toHaveBeenTriggered( );
+    } );
+
+    it("should trigger fp:datetimechange on date change", function () {
+      var spyEvent = spyOnEvent($fp1.selector,'fp:datetimechange');
+      $fp1.filthypillow( "show" );
+      triggerKey( "keydown", keys.UP_ARROW );
+      expect(spyEvent).toHaveBeenTriggered( );
+    } );
+
+    it("should trigger fp:datetimechange on time change", function () {
+      var spyEvent = spyOnEvent($fp1.selector,'fp:datetimechange');
+      $fp1.filthypillow( "show" );
+      triggerKey( "keydown", keys.RIGHT_ARROW );
+      triggerKey( "keydown", keys.UP_ARROW );
+      expect(spyEvent).toHaveBeenTriggered( );
+    } );
+
     it("should increment month by 1 <UP ARROW>", function() {
       $fp4.filthypillow( "show" );
       triggerKey( "keydown", keys.UP_ARROW );
