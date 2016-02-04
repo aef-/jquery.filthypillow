@@ -140,7 +140,7 @@
       if( this.options.enableCalendar ) {
         if( step === "day" || step === "month" )
           this.calendar.show( );
-        else if( !this.options.calendar.isPinned ) 
+        else if( !this.options.calendar.isPinned )
           this.calendar.hide( );
       }
     },
@@ -443,7 +443,7 @@
           isInRange = this.isInRange( tmpDateTime );
 
       if( !this.isError && !isInRange )
-        return;
+        this.showError( this.currentStep, "Date is out of range, please fix." );
       else if( isInRange )
         this.hideError( );
 
