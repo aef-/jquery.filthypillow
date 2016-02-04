@@ -22,6 +22,7 @@
         steps: [ "month", "day", "hour", "minute", "meridiem" ],
 				exitOnBackgroundClick: true,
         enable24HourTime: false,
+        minuteStepSize: 15,
         calendar: {
 					isPinned: false,
           saveOnDateSelect: false
@@ -293,7 +294,7 @@
         this.changeDateTimeUnit( "hour", offset );
       }
       else if( this.currentStep === "minute" )
-        this.changeDateTimeUnit( this.currentStep, -15 );
+        this.changeDateTimeUnit( this.currentStep, parseInt(this.options.minuteStepSize) * -1 );
       else if( this.currentStep )
         this.changeDateTimeUnit( this.currentStep, -1 );
 
@@ -307,7 +308,7 @@
         this.changeDateTimeUnit( "hour", offset );
       }
       else if( this.currentStep === "minute" )
-        this.changeDateTimeUnit( this.currentStep, 15 );
+        this.changeDateTimeUnit( this.currentStep, parseInt(this.options.minuteStepSize) );
       else if( this.currentStep )
         this.changeDateTimeUnit( this.currentStep, 1 );
 
