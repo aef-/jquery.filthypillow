@@ -108,6 +108,8 @@ describe("FilthyPillow", function() {
     $fp11form = $( "#fp11-form" );
     $fp11 = $( ".filthypillow-11" );
     $fp11.filthypillow( {
+      minuteStepSize: 2,
+      startStep: "minute"
     } );
 
     $fp12 = $( ".filthypillow-12" );
@@ -278,6 +280,13 @@ describe("FilthyPillow", function() {
       $( "body" ).click( );
       expect($fp7).toShowDatePicker( );
     });
+
+    it("should be able to set step size for minutes", function() {
+      $fp11.filthypillow( "show" );
+      expect($fp11).toHaveActiveStep( "minute" );
+      triggerKey( "keydown", keys.UP_ARROW);
+      expect($fp11.filthypillow( "getDate" ) ).toHaveDate( now.add( "minute", 2 ), "minute" );
+		});
 
     it("should show error when the selection of a date is previous to minDateTime", function() {
       $fp6.filthypillow( "show" );
