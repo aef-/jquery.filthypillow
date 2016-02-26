@@ -279,25 +279,11 @@ describe("FilthyPillow", function() {
       expect($fp7).toShowDatePicker( );
     });
 
-    it("should prevent the selection of a date previous to minDateTime", function() {
+    it("should show error when the selection of a date is previous to minDateTime", function() {
       $fp6.filthypillow( "show" );
+      expect( $fp6.next( ".fp-container" ).find( ".fp-errors" ) ).not.toBeVisible( );
       triggerKey( "keydown", keys.DOWN_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "day" );
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      triggerKey( "keydown", keys.DOWN_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "month" );
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      //TODO does not test meridiem
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      triggerKey( "keydown", keys.DOWN_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "minute" );
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      triggerKey( "keydown", keys.DOWN_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "hour" );
+      expect( $fp6.next( ".fp-container" ).find( ".fp-errors" ) ).toBeVisible( );
     });
 
 		it("should keep calendar any date/time box is active and pinned config is set to true", function() {
@@ -314,25 +300,11 @@ describe("FilthyPillow", function() {
       expect($fp7).toShowCalendar( );
     });
 
-    it("should prevent the selection of a date later to maxDateTime", function() {
+    it("should show error when the selection of a date is previous to minDateTime", function() {
       $fp6.filthypillow( "show" );
-      triggerKey( "keydown", keys.UP_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "day" );
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      triggerKey( "keydown", keys.UP_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "month" );
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      //TODO does not test meridiem
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      triggerKey( "keydown", keys.UP_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "minute" );
-
-      triggerKey( "keydown", keys.LEFT_ARROW );
-      triggerKey( "keydown", keys.UP_ARROW );
-      expect( $fp6.filthypillow( "getDate" ) ).toHaveDate( now, "hour" );
+      expect( $fp6.next( ".fp-container" ).find( ".fp-errors" ) ).not.toBeVisible( );
+      triggerKey( "keydown", keys.UP_ARROW);
+      expect( $fp6.next( ".fp-container" ).find( ".fp-errors" ) ).toBeVisible( );
     });
 
     it("should hide calendar left and right arrow", function() {
