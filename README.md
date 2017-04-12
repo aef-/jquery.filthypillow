@@ -1,4 +1,6 @@
-#jquery.filthypillow
+# jquery.filthypillow [NOT MAINTAINED]
+
+This library is no longer maintained.
 
 A fancy and small calendar and date-time picker.
 
